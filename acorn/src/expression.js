@@ -407,6 +407,7 @@ pp.parseLiteral = function(value) {
   return this.finishNode(node, "Literal")
 }
 
+// 解析圆括号里的布尔表达式
 pp.parseParenExpression = function() {
   this.expect(tt.parenL)
   let val = this.parseExpression()

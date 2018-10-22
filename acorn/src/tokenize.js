@@ -23,7 +23,7 @@ export class Token {
 }
 
 // ## Tokenizer
-
+// 所以，下面都只是在 Parser 的原型上面添加方法
 const pp = Parser.prototype
 
 // Move to the next token
@@ -69,6 +69,7 @@ pp.curContext = function() {
 // properties.
 
 pp.nextToken = function() {
+  console.log('this.pos => ', this.pos);
   let curContext = this.curContext()
   if (!curContext || !curContext.preserveSpace) this.skipSpace()
 
@@ -89,8 +90,11 @@ pp.readToken = function(code) {
   return this.getTokenFromCode(code)
 }
 
+// 这个方法其实是 String.prototype.codePointAt() 的一个 polyfill?
 pp.fullCharCodeAtPos = function() {
+  // code: 当前位置处的字符对应的 Unicode 值
   let code = this.input.charCodeAt(this.pos)
+  // <= 55295 或 >= 57344
   if (code <= 0xd7ff || code >= 0xe000) return code
   let next = this.input.charCodeAt(this.pos + 1)
   return (code << 10) + next - 0x35fdc00
@@ -477,6 +481,7 @@ pp.readCodePoint = function() {
   return code
 }
 
+// String.fromCodePoint() 的 polyfill
 function codePointToString(code) {
   // UTF-16 Decoding
   if (code <= 0xFFFF) return String.fromCharCode(code)
@@ -663,6 +668,7 @@ pp.readWord1 = function() {
   while (this.pos < this.input.length) {
     let ch = this.fullCharCodeAtPos()
     if (isIdentifierChar(ch, astral)) {
+      // 0xffff 是 65535
       this.pos += ch <= 0xffff ? 1 : 2
     } else if (ch === 92) { // "\"
       this.containsEsc = true

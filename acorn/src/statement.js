@@ -14,7 +14,8 @@ const pp = Parser.prototype
 // statements, and wraps them in a Program node.  Optionally takes a
 // `program` argument.  If present, the statements will be appended
 // to its body instead of creating a new node.
-
+// Parser 的入口函数
+// 采用的是自顶向下的方法
 pp.parseTopLevel = function(node) {
   let exports = {}
   if (!node.body) node.body = []
@@ -70,6 +71,7 @@ pp.isAsyncFunction = function() {
 // does not help.
 
 pp.parseStatement = function(context, topLevel, exports) {
+  // this.type 是个 TokenType 对象（在 tokentype.js 里定义）
   let starttype = this.type, node = this.startNode(), kind
 
   if (this.isLet()) {
@@ -80,6 +82,7 @@ pp.parseStatement = function(context, topLevel, exports) {
   // Most types of statements are recognized by the keyword they
   // start with. Many are trivial to parse, some require a bit of
   // complexity.
+  // 大部分语句可以通过其开头的关键字来识别出来
 
   switch (starttype) {
   case tt._break: case tt._continue: return this.parseBreakContinueStatement(node, starttype.keyword)
@@ -100,7 +103,7 @@ pp.parseStatement = function(context, topLevel, exports) {
   case tt._const: case tt._var:
     kind = kind || this.value
     if (context && kind !== "var") this.unexpected()
-    return this.parseVarStatement(node, kind)
+    return this.parseVarStatement(node, kind)  // 解析变量声明语句
   case tt._while: return this.parseWhileStatement(node)
   case tt._with: return this.parseWithStatement(node)
   case tt.braceL: return this.parseBlock(true, node)
@@ -237,6 +240,9 @@ pp.parseFunctionStatement = function(node, isAsync, declarationPosition) {
   return this.parseFunction(node, FUNC_STATEMENT | (declarationPosition ? 0 : FUNC_HANGING_STATEMENT), false, isAsync)
 }
 
+/**
+ * 解析 if 条件语句
+ */
 pp.parseIfStatement = function(node) {
   this.next()
   node.test = this.parseParenExpression()
@@ -403,7 +409,7 @@ pp.parseExpressionStatement = function(node, expr) {
 // Parse a semicolon-enclosed block of statements, handling `"use
 // strict"` declarations when `allowStrict` is true (used for
 // function bodies).
-
+// 解析块语句，也会有 body 属性（是个数组）
 pp.parseBlock = function(createNewLexicalScope = true, node = this.startNode()) {
   node.body = []
   this.expect(tt.braceL)

@@ -6,12 +6,14 @@
 
 // All token type variables start with an underscore, to make them
 // easy to recognize.
+// 所有的标识符类型变量以下划线开头，以便于识别
 
 // The `beforeExpr` property is used to disambiguate between regular
 // expressions and divisions. It is set on all token types that can
 // be followed by an expression (thus, a slash after them would be a
 // regular expression).
-//
+// beforeExpr 属性用于消除正则表达式和除号之间的歧义。
+
 // The `startsExpr` property is used to check if the token ends a
 // `yield` expression. It is set on all token types that either can
 // directly start an expression (like a quotation mark) or can
@@ -59,6 +61,7 @@ export const types = {
   eof: new TokenType("eof"),
 
   // Punctuation token types.
+  // 标点符号类型，也就是所谓的“分隔符”，例如括号、分号等
   bracketL: new TokenType("[", {beforeExpr: true, startsExpr: true}),
   bracketR: new TokenType("]"),
   braceL: new TokenType("{", {beforeExpr: true, startsExpr: true}),
@@ -77,6 +80,7 @@ export const types = {
   backQuote: new TokenType("`", startsExpr),
   dollarBraceL: new TokenType("${", {beforeExpr: true, startsExpr: true}),
 
+  // 操作符
   // Operators. These carry several kinds of properties to help the
   // parser use them properly (the presence of these properties is
   // what categorizes them as operators).
@@ -86,10 +90,12 @@ export const types = {
   //
   // `prefix` and `postfix` mark the operator as a prefix or postfix
   // unary operator.
+  // 用于标记一元操作符是位于前面还是后面
   //
   // `isAssign` marks all of `=`, `+=`, `-=` etcetera, which act as
   // binary operators with a very low precedence, that should result
   // in AssignmentExpression nodes.
+  // 标记该操作符为赋值操作符，便于生成赋值表达式（AssignmentExpression）节点
 
   eq: new TokenType("=", {beforeExpr: true, isAssign: true}),
   assign: new TokenType("_=", {beforeExpr: true, isAssign: true}),
@@ -109,6 +115,7 @@ export const types = {
   slash: binop("/", 10),
   starstar: new TokenType("**", {beforeExpr: true}),
 
+  // 关键字
   // Keyword token types.
   _break: kw("break"),
   _case: kw("case", beforeExpr),

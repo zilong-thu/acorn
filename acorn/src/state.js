@@ -88,8 +88,12 @@ export class Parser {
   }
 
   parse() {
-    let node = this.options.program || this.startNode()
-    this.nextToken()
+    let node = this.options.program || this.startNode();
+
+    // 开始分析
+    this.nextToken();
+
+    // 自顶向下的语法分析
     return this.parseTopLevel(node)
   }
 
@@ -108,6 +112,12 @@ export class Parser {
     return cls
   }
 
+  /**
+   * 对外暴露的主要方法
+   * @param  {String|Stream} input   代码
+   * @param  {Object} options [description]
+   * @return {Object} AST
+   */
   static parse(input, options) {
     return new this(options, input).parse()
   }
@@ -118,6 +128,9 @@ export class Parser {
     return parser.parseExpression()
   }
 
+  /**
+   * 词法分析器
+   */
   static tokenizer(input, options) {
     return new this(options, input)
   }
